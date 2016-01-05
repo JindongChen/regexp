@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Regular Expression</title>
+  <link href="css/slide.css" rel="stylesheet" />
+</head>
+
+<body>
+
+<textarea id="source">
+
+class: center, middle
+
+# Regular Expression
+
+Jindong Chen
+
+<small>
+with [remark](https://github.com/gnab/remark)
+</small>
+
+---
+
+# Outline
+
+- Overview
+- Basic usage
+- Differences between grep, egrep, fgrep and pgrep
+- Reference
+- Example
+
+---
+
+class: center, middle
+
+<h2>Overview</h2>
+
+---
+
+class: center, middle
+
+<h2>Basic usage</h2>
+
+---
+
+class: center, middle
+
+<h2>Differences</h2>
+<h3>between</h3>
+<h3>grep, egrep, fgrep and pgrep</h3>
+
+---
+
+<h3>grep</h3>
+- Stands for "Global Regular Expressions Print".
+- Is a program which scans a specified file or files line by line, returning lines that contain a pattern.
+
+The standard grep command looks like:</br>
+<pre>
+grep &lt flags &gt '&lt regular expression &gt' &lt filename &gt
+</pre>
+grep prints the search results to the screen (stdout) and returns the following
+exit values:
+<pre>
+0    A match was found.
+1    No match was found.
+>1   A syntax error was found or a file was inaccessible
+     (even if matches were found).
+</pre>
+Some common flags are:
+<pre>
+-c   Count the number of successful matches, not printing the actual matches
+-i   Make the search case insensitive
+-n   Print the line number before each match printout
+-v   Take the complement of the regular expression
+     (i.e. return the lines which don't match)
+-l   Print the file names of files with lines which match the expression.
+-s   Slient mode. Noexistent and unreadable files are ignored
+     (i.e. their error messages are suppressed)
+</pre>
+
+---
+
+<h3>egrep</h3>
+- Stands for "Extended Global Regular Expressions Print".
+
+The 'E' in egrep means treat the pattern as a regular expression. "Extended
+Regular Expressions" abbreviated 'ERE' is enabled in egrep. <span class=red>egrep (which is the
+  same as grep -E) treats +, ?, |, (, and ) as meta-characters.</span>
+In basic regular expressions (with grep), the meta-characters ?, +, {, |, (,
+and ) lose their special meaning. If you want grep to treat these characters as
+meta-characters, escape them \?, \+, \{, \|, \(, and \).
+For example, here grep uses basic regular expressions where the plus is treated
+literally, any line with a plus in it is returned.
+<pre> grep "+" myfile.txt </pre>
+egrep on the other hand treats the "+" as a meta character and returns every
+line because plus is interpreted as "one or more times".
+<pre> egrep "+" myfile.txt </pre>
+Here every line is returned because the + was treated by egrep as a meta
+character. normal grep would have searched only for lines with a literal +.
+
+---
+
+<h3>fgrep</h3>
+- Stands for "Fixed-string Global Regular Expressions Print".
+
+<span class=red>fgrep (which is the same as grep -F) is fixed or fast grep and behaves as grep
+but does NOT recognize any regular expression meta-characters as being
+special.</span>
+The search will complete faster because it only processes a simple string
+rather than a complex pattern.
+For example, if I wanted to search my .bash_profile for a literal dot (.) then
+using grep would be difficult because I would have to escape the dot because
+dot is a meta character that means 'wild-card, any single character':
+<pre> grep "." myfile.txt </pre>
+The above command returns every line of myfile.txt. Do this instead:
+<pre> fgrep "." myfile.txt </pre>
+Then only the lines that have a literal '.' in them are returned. fgrep helps
+us not bother escaping our meta characters.
+
+---
+
+<h3>pgrep</h3>
+
+- Stands for "Process-ID Global Regular Expressions Print".
+
+pgrep looks through the currently running processes and lists the process IDs
+which matches the selection criteria to stdout. pgrep is handy when all you
+want to know is the process id integer of a process. For example, if I wanted
+to know only the process ID of my mysql process I would use the command
+<pre> pgrep mysql </pre>
+which would return a process ID like 7312.
+
+---
+
+class: center, middle
+
+<h2>Reference</h2>
+
+---
+
+<h3>most used tokens</h3>
+<pre>
+[abc]           A single character of: a, b or c
+[^abc]          A character except: a, b or c
+[a-z]           A character in the range: a-z
+[^a-z]          A character not in the range: a-z
+[a-zA-Z]        A character in the range: a-z or A-Z
+.               Any single character
+\s              Any whitespace character
+\S              Any non-whitespace character
+\d              Any digit
+\D              Any non-digit
+\w              Any word character
+\W              Any non-word character
+(...)           Capture everything enclosed
+(a|b)           Match either a or b
+a?              Zero or one or a
+a*              Zero or more of a
+a+              One or more of a
+a{3}            Exactly 3 of a
+a{3,}           3 or more of a
+a{3,6}          Between 3 and 6 of a
+^               Start of string
+$               End of string
+\b              A word boundary
+\B              Non-word boundary
+</pre>
+
+---
+### general tokens
+<pre>
+\n              Newline
+\r              Carriage return
+\t              Tab
+\0              Null character
+</pre>
+
+---
+### anchors
+<pre>
+\G              Start of match
+^               Start of string
+$               End of string
+\A              Start of string
+\Z              End of string
+\z              Absolute end of string
+\b              A word boundary
+\B              Non-word boundary
+</pre>
+
+---
+### meta sequences - 1
+<pre>
+.               Any single character
+\s              Any whitespace character
+\S              Any non-whitespace character
+\d              Any digit
+\D              Any non-digit
+\w              Any word character [a-zA-Z0-9_]
+\W              Any non-word character
+\X              Any unicode sequences
+\C              Match one data unit
+\R              Unicode newlines
+\v              Vertical whitespace character
+\V              Negation of \v
+\h              Horizontal whitespace character
+\H              Negation of \h
+\K              Reset match
+\n              Match nth subpattern
+\pX             Unicode property X
+\p{...}         Unicode property
+\PX             Negation of \p
+\P{...}         Negation of \p
+\Q...\E         Quote; treat as literals
+\k<name>        Match subpattern `name`
+\k'name'        Match subpattern `name`
+\k{name}        Match subpattern `name`
+</pre>
+
+---
+### meta sequences - 2
+<pre>
+\gn             Match nth subpattern
+\g{n}           Match nth subpattern
+\g{-n}          Match nth relative subpattern
+\g'name'        Recurse subpattern `name`
+\g<n>           Recurse nth subpattern
+\g'n'           Recurse nth subpattern
+\g<+n>          Recurse nth relative subpattern
+\g'+n'          Recurse nth relative subpattern
+\xYY            Hex character YY
+\x{YYYY}        Hex character YYYY
+\ddd            Octal character ddd
+\cY             Control character Y
+[\b]            Backspace character
+\               Makes any character literal
+</pre>
+
+---
+### group constructs
+<pre>
+(...)           Capture everything enclosed
+(a|b)           Match either a or b
+(?....)         Match everything enclosed
+(?>...)         Atomic group
+(?|...)         Duplicate subpattern group
+(?#...)         Comment
+(?'name'...)    Named capturing group
+(?&lt name &gt...)    Named capturing group
+(?P&lt name &gt...)   Named capturing group
+(?imsxXU)       Inline modifiers
+(?(...)|)       Conditional statement
+(?R)            Recurse entire pattern
+(?1)            Recurse first subpattern
+(?+1)           Recurse first relative subpattern
+(?&name)        Recurse subpattern `name`
+(?P=name)       Match subpattern `name`
+(?P>name)       Recurse subpattern `name`
+(?=...)         Positive lookahead
+(?!...)         Negative lookahead
+(?<=...)        Positive lookbehind
+(?&lt !...)       Negative lookbehind
+(*UTF16)        Verbs
+</pre>
+
+---
+### quantifiers
+<pre>
+a?              Zero or one of a
+a*              Zero or more of a
+a+              One or more of a
+a{3}            Exactly 3 of a
+a{3,}           3 or more of a
+a{3,6}          Between 3 and 6 of a
+a*              Greedy quantifier
+a*?             Lazy quantifier
+a*+             Possessive quantifier
+</pre>
+
+---
+### character classes
+<pre>
+[abz]           A single character of: a, b or c
+[^abc]          A character except: a, b or c
+[a-z]           A character in the range: a-z
+[^a-z]          A character not in the range: a-z
+[a-zA-Z]        A character in the range: a-z or A-Z
+[[:alnum:]]     Letters and digits
+[[:alpha:]]     Letters
+[[:lower:]]     Lowercase letters
+[[:upper:]]     Uppercase letters
+[[:ascii:]]     Ascii codes 0-127
+[[:blank:]]     Space or tab only
+[[:space:]]     Whitespace
+[[:cntrl:]]     Control characters
+[[:digit:]]     Decimal digits
+[[:xdigit:]]    Hexadecimal digits
+[[:graph:]]     Visble characters (not space)
+[[:print:]]     Visible characters
+[[:punct:]]     Visible punctuation characters
+[[:word:]]      Word characters
+</pre>
+
+---
+### flags/modifiers
+<pre>
+g               Global
+m               Multiline
+i               Case insensitive
+x               Ignore whitespace
+s               Single line
+u               Unicode
+X               eXtended
+U               Ungreedy
+A               Anchor
+</pre>
+
+---
+### substitution
+<pre>
+\0              Complete match contents
+\1              Contents in capture group 1
+$1              Contents in capture group 1
+${foo}          Contents in capture group `foo`
+\{foo}          Contents in capture group `foo`
+\g&lt foo &gt       Contents in capture group `foo`
+\g<1>           Contents in capture group 1
+\x20            Hexadecimal replacement values
+\x{06fa}        Hexadecimal replacement values
+\f              Form-feed
+</pre>
+
+---
+
+class: center, middle
+
+<h2>Example</h2>
+
+</textarea>
+
+<script src="js/remark-latest.min.js"></script>
+
+<script>
+var slideshow = remark.create();
+</script>
+
+</body>
+</html>
